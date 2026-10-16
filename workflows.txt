@@ -1,0 +1,46 @@
+name: Validate Repository Structure
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check /docs folder exists
+      run: |
+        if [ ! -d "docs" ]; then
+          echo "❌ /docs folder not found!"
+          exit 1
+        fi
+        echo "✅ /docs folder exists"
+    
+    - name: Check for ERD
+      run: |
+        if ! ls docs/*.{png,jpg,jpeg,pdf} 2>/dev/null | grep -q .; then
+          echo "❌ No ERD image found in /docs!"
+          exit 1
+        fi
+        echo "✅ ERD found"
+    
+    - name: Check for SQL script
+      run: |
+        if ! ls docs/*.sql 2>/dev/null | grep -q .; then
+          echo "❌ No SQL script found in /docs!"
+          exit 1
+        fi
+        echo "✅ SQL script found"
+    
+    - name: Check README exists
+      run: |
+        if [ ! -f "README.md" ]; then
+          echo "❌ README.md not found!"
+          exit 1
+        fi
+        echo "✅ README found"
